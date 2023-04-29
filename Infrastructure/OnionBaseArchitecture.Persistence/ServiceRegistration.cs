@@ -3,11 +3,15 @@ using OnionBaseArchitecture.Application.Abstractions;
 using OnionBaseArchitecture.Application.Abstractions.Repositories;
 using OnionBaseArchitecture.Application.Abstractions.Repositories.Language;
 using OnionBaseArchitecture.Application.Abstractions.Repositories.LanguageText;
+using OnionBaseArchitecture.Application.Abstractions.Repositories.Setting;
+using OnionBaseArchitecture.Application.Abstractions.Repositories.User;
 using OnionBaseArchitecture.Application.Abstractions.Services;
 using OnionBaseArchitecture.Application.Common;
 using OnionBaseArchitecture.Persistence.Repositories;
 using OnionBaseArchitecture.Persistence.Repositories.Language;
 using OnionBaseArchitecture.Persistence.Repositories.LanguageText;
+using OnionBaseArchitecture.Persistence.Repositories.Setting;
+using OnionBaseArchitecture.Persistence.Repositories.User;
 using OnionBaseArchitecture.Persistence.Services;
 
 namespace OnionBaseArchitecture.Persistence
@@ -20,11 +24,24 @@ namespace OnionBaseArchitecture.Persistence
             services.AddScoped(typeof(IWriteRepository<>), typeof(WriteRepository<>));
             services.AddScoped<IConnectionManager, MainConnectionManager>();
 
-            services.AddScoped<ILanguageTextReadRepository, LanguageTextReadRepository>();
+            // Language
             services.AddScoped<ILanguageReadRepository, LanguageReadRepository>();
 
+            // LanguageText
+            services.AddScoped<ILanguageTextReadRepository, LanguageTextReadRepository>();
+
+            // User
+            services.AddScoped<IUserReadRepository, UserReadRepository>();
+            services.AddScoped<IUserWriteRepository, UserWriteRepository>();
+
+            // Setting
+            services.AddScoped<ISettingReadRepository, SettingReadRepository>();
+
+            services.AddScoped<IAuthService, AuthService>();
+            services.AddScoped<IUserService, UserService>();
             services.AddScoped<ILanguageService, LanguageService>();
             services.AddScoped<ILanguageTextService, LanguageTextService>();
+            services.AddScoped<ISettingService, SettingService>();
         }
     }
 }

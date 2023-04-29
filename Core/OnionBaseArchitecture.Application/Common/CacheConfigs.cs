@@ -1,4 +1,4 @@
-﻿namespace OnionBaseArchitecture.Domain.Entities.Common
+﻿namespace OnionBaseArchitecture.Application.Common
 {
     public class CacheConfigs
     {

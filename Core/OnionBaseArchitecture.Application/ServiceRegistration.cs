@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using MediatR;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace OnionBaseArchitecture.Application
 {
@@ -6,6 +7,7 @@ namespace OnionBaseArchitecture.Application
     {
         public static void AddApplicationServices(this IServiceCollection services)
         {
+            services.AddMediatR(typeof(ServiceRegistration));
         }
     }
 }

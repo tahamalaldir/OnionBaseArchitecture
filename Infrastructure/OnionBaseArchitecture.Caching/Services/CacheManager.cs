@@ -1,5 +1,5 @@
 ﻿using OnionBaseArchitecture.Application.Abstractions.Caching;
-using OnionBaseArchitecture.Domain.Entities.Common;
+using OnionBaseArchitecture.Application.Common;
 using System.Reflection;
 
 namespace OnionBaseArchitecture.Caching.Services

@@ -51,7 +51,7 @@ namespace OnionBaseArchitecture.Persistence.Repositories
             var tableAttribute = typeof(T).GetCustomAttribute<TableName>();
             var query = $@"Select * from [{tableAttribute.SchemeName}].[{tableAttribute.Name}] with (NOLOCK) where IsDeleted = 0 AND IsActive = 1 AND Id = @Id";
             DynamicParameters parameters = new DynamicParameters();
-            parameters.Add("Id", Id, DbType.Int32);
+            parameters.Add("Id", Id, DbType.String);
             using (var con = _conn.Connection)
             {
                 return await con.QueryFirstOrDefaultAsync<T>(query, parameters, commandType: CommandType.Text);

@@ -1,4 +1,4 @@
-﻿using OnionBaseArchitecture.Domain.Entities.Common;
+﻿using OnionBaseArchitecture.Application.Common;
 using StackExchange.Redis;
 
 namespace OnionBaseArchitecture.Caching.Context

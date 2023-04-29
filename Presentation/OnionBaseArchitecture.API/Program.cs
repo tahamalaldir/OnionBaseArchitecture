@@ -1,12 +1,16 @@
+Ôªøusing Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
 using OnionBaseArchitecture.Application;
+using OnionBaseArchitecture.Application.Common;
 using OnionBaseArchitecture.Caching;
-using OnionBaseArchitecture.Domain.Entities.Common;
 using OnionBaseArchitecture.Infrastructure;
 using OnionBaseArchitecture.Persistence;
+using static Dapper.SqlMapper;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddHttpContextAccessor();//Client'tan gelen request neticvesinde olu˛turulan HttpContext nesnesine katmanlardaki class'lar ¸zerinden(busineess logic) eri˛ebilmemizi salayan bir servistir.
+builder.Services.AddHttpContextAccessor();//Client'tan gelen request neticvesinde olu√æturulan HttpContext nesnesine katmanlardaki class'lar √ºzerinden(busineess logic) eri√æebilmemizi sa√∞layan bir servistir.
 builder.Services.AddApplicationServices();
 builder.Services.AddCachingServices();
 builder.Services.AddPersistenceServices();
@@ -20,7 +24,58 @@ CacheConfigs cacheConfigs = new CacheConfigs();
 builder.Configuration.GetSection("CacheConfigs").Bind(cacheConfigs);
 builder.Services.Add(new ServiceDescriptor(typeof(CacheConfigs), cacheConfigs));
 
+JwtConfigs jwtConfigs = new JwtConfigs();
+builder.Configuration.GetSection("JwtConfigs").Bind(jwtConfigs);
+builder.Services.Add(new ServiceDescriptor(typeof(JwtConfigs), jwtConfigs));
+
 // Add services to the container.
+builder.Services.AddControllers().AddJsonOptions(
+options =>
+{
+    options.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
+    options.JsonSerializerOptions.PropertyNamingPolicy = null;
+}).ConfigureApiBehaviorOptions(opt =>
+{
+    opt.SuppressModelStateInvalidFilter = true;
+});
+
+// JWT authentication Aayarlamas√Ω
+var key = Encoding.ASCII.GetBytes(jwtConfigs.TokenKey);
+builder.Services.AddAuthentication(x =>
+{
+    x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+.AddJwtBearer(x =>
+{
+    x.RequireHttpsMetadata = false;
+    x.SaveToken = true;
+    x.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateAudience = false, //OluÔøΩturulacak token deÔøΩerini kimlerin/hangi originlerin/sitelerin kullanÔøΩcÔøΩ belirlediÔøΩimiz deÔøΩerdir. -> www.bilmemne.com
+        ValidateIssuer = false, //OluÔøΩturulacak token deÔøΩerini kimin daÔøΩÔøΩttÔøΩnÔøΩ ifade edeceÔøΩimiz alandÔøΩr. -> www.myapi.com
+        ValidateLifetime = true, //OluÔøΩturulan token deÔøΩerinin sÔøΩresini kontrol edecek olan doÔøΩrulamadÔøΩr.
+        ValidateIssuerSigningKey = true, //ÔøΩretilecek token deÔøΩerinin uygulamamÔøΩza ait bir deÔøΩer olduÔøΩunu ifade eden suciry key verisinin doÔøΩrulanmasÔøΩdÔøΩr.
+        IssuerSigningKey = new SymmetricSecurityKey(key),
+        LifetimeValidator = (notBefore, expires, securityToken, validationParameters) => expires != null ? expires > DateTime.UtcNow : false,
+        ValidAudience = jwtConfigs.Audience,
+        ValidIssuer = jwtConfigs.Issuer,
+    };
+
+    x.Events = new JwtBearerEvents
+    {
+        OnChallenge = async context =>
+        {
+            // Call this to skip the default logic and avoid using the default response
+            context.HandleResponse();
+
+            // Write to the response in any way you wish
+            context.Response.StatusCode = 401;
+            context.Response.Headers.Append("my-custom-header", "custom-value");
+            await context.Response.WriteAsync("Yetkisiz eri≈üim!");
+        }
+    };
+});
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -38,6 +93,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();

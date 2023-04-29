@@ -1,5 +1,4 @@
 ﻿using OnionBaseArchitecture.Application.Abstractions;
-using OnionBaseArchitecture.Domain.Entities.Common;
 using System.Data;
 using System.Data.SqlClient;
 
