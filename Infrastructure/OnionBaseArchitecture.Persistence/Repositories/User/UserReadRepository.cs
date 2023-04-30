@@ -11,6 +11,15 @@ namespace OnionBaseArchitecture.Persistence.Repositories.User
         {
         }
 
+        public async Task<Domain.Entities.User> GetUsernameOrEmail(string Username, string Email)
+        {
+            DynamicParameters parameters = new DynamicParameters();
+            parameters.Add("Username", Username);
+            parameters.Add("Email", Email);
+
+            return await QeryFirstAsync("SELECT [Id], [Username], [Email], [Name], [Surname], [PhoneNumber], [PasswordExpireDate], [Token], [TokenExpireDate], [EMailApproved], [EMailToken],[EMailTokenExpireDate],[PhoneApproved], [PhoneToken], [PhoneTokenExpireDate], [IsApproved], [CreatedDate], [IsActive], [IsDeleted], [CreatedByUserId] FROM [dbo].[Users] WHERE (Username = @Username OR Email = @Email) AND IsDeleted = 0", parameters, CommandType.Text);
+        }
+
         public async Task<Domain.Entities.User> GetUsernameOrEmailAndPassword(string UsernameOrEmail, string Password)
         {
             DynamicParameters parameters = new DynamicParameters();

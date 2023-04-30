@@ -24,19 +24,19 @@ namespace OnionBaseArchitecture.Domain.Entities
 
         public DateTime? TokenExpireDate { get; set; }
 
-        public bool? EmailApproved { get; set; }
+        public bool EmailApproved { get; set; } = false;
 
         public string EmailToken { get; set; }
 
         public DateTime? EmailTokenExpireDate { get; set; }
 
-        public bool? PhoneApproved { get; set; }
+        public bool PhoneApproved { get; set; } = false;
 
         public string PhoneToken { get; set; }
 
         public DateTime? PhoneTokenExpireDate { get; set; }
 
-        public bool IsApproved { get; set; }
+        public bool IsApproved { get; set; } = true;
 
     }
 }

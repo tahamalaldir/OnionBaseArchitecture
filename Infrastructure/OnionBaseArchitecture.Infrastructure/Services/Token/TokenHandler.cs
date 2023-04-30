@@ -8,7 +8,7 @@ using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
 
-namespace OnionBaseArchitecture.Infrastructure.Token
+namespace OnionBaseArchitecture.Infrastructure.Services.Token
 {
     public class TokenHandler : ITokenHandler
     {
@@ -19,10 +19,31 @@ namespace OnionBaseArchitecture.Infrastructure.Token
 
         public TokenHandler(ISettingService settingService, JwtConfigs jwtConfigs, IUserService userService, AppSettings appSettings)
         {
-            this._settingService = settingService;
+            _settingService = settingService;
             _jwtConfigs = jwtConfigs;
             _userService = userService;
             _appSettings = appSettings;
+        }
+
+        public async Task<string> CreateMobileTokenAsync(string Language)
+        {
+            int.TryParse(await _settingService.GetSettingBySystemNameAsync("api.token.expireminute"), out int expireMinute);
+
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var key = Encoding.ASCII.GetBytes(_jwtConfigs.TokenKey);
+            var tokenDescriptor = new SecurityTokenDescriptor
+            {
+                Subject = new ClaimsIdentity(new Claim[]
+                {
+                    new Claim("mT", "true"),
+                    new Claim("lng", "tr")
+                }),
+                Expires = DateTime.UtcNow.AddMinutes(expireMinute),
+                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
+            };
+            var token = tokenHandler.CreateToken(tokenDescriptor);
+
+            return tokenHandler.WriteToken(token);
         }
 
         public async Task<Application.DTOs.Token> CreateTokenAsync(string UserId)

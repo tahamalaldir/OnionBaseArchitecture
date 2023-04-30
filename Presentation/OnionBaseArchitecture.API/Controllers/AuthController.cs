@@ -1,29 +1,31 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using OnionBaseArchitecture.Application.Abstractions.Caching;
+using OnionBaseArchitecture.Application.Features.Commands.ApiUser.AuthenticateDevice;
 using OnionBaseArchitecture.Application.Features.Commands.User.LoginUser;
 
 namespace OnionBaseArchitecture.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(AuthenticationSchemes = Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerDefaults.AuthenticationScheme)]
     public class AuthController : ControllerBase
     {
-        private readonly ICacheService _cacheService;
         private readonly IMediator _mediator;
 
-        public AuthController(ICacheService cacheService, IMediator mediator)
+        public AuthController(IMediator mediator)
         {
-            _cacheService = cacheService;
             _mediator = mediator;
         }
 
-        [HttpGet]
-        [Authorize(AuthenticationSchemes = Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerDefaults.AuthenticationScheme)]
-        public async Task<string> Get()
+        [AllowAnonymous]
+        [Route("AuthenticateDevice")]
+        [HttpPost]
+        public async Task<IActionResult> AuthenticateDevice(AuthenticateDeviceCommandRequest request)
         {
-            return await _cacheService.StringControl("test");
+            AuthenticateDeviceCommandResponse response = await _mediator.Send(request);
+
+            return Ok(response);
         }
 
         [Route("Login")]

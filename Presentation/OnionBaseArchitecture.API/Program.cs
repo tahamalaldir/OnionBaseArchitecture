@@ -16,6 +16,10 @@ builder.Services.AddCachingServices();
 builder.Services.AddPersistenceServices();
 builder.Services.AddInfrastructureServices();
 
+AppSettings appSettings = new AppSettings();
+builder.Configuration.GetSection("AppSettings").Bind(appSettings);
+builder.Services.Add(new ServiceDescriptor(typeof(AppSettings), appSettings));
+
 ConnectionConfigs connectionConfigs = new ConnectionConfigs();
 builder.Configuration.GetSection("ConnectionConfigs").Bind(connectionConfigs);
 builder.Services.Add(new ServiceDescriptor(typeof(ConnectionConfigs), connectionConfigs));

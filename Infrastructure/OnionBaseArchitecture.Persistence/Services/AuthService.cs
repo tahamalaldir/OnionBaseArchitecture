@@ -11,12 +11,14 @@ namespace OnionBaseArchitecture.Persistence.Services
         private readonly IUserService _userService;
         private readonly ICacheService _cacheService;
         private readonly ITokenHandler _tokenHandler;
+        private readonly IApiUserService _apiUserService;
 
-        public AuthService(IUserService userService, ICacheService cacheService, ITokenHandler tokenHandler)
+        public AuthService(IUserService userService, ICacheService cacheService, ITokenHandler tokenHandler, IApiUserService apiUserService)
         {
             _userService = userService;
             _cacheService = cacheService;
             _tokenHandler = tokenHandler;
+            _apiUserService = apiUserService;
         }
 
         public async Task<Tuple<bool, string, Token>> LoginAsync(string UsernameOrEmail, string Password)
@@ -67,5 +69,24 @@ namespace OnionBaseArchitecture.Persistence.Services
             throw new NotImplementedException();
         }
 
+        public async Task<Tuple<bool, string, string>> AuthenticateDeviceAsync(string Username, string Password, string Language)
+        {
+            Tuple<bool, string, string> result = new Tuple<bool, string, string>(false, "", "");
+            try
+            {
+                if (await _apiUserService.CheckApiUser(Username, Password))
+                {
+                    string Token = await _tokenHandler.CreateMobileTokenAsync(Language);
+                    if (!string.IsNullOrEmpty(Token))
+                    {
+                        result = new Tuple<bool, string, string>(true, "", Token);
+                    }
+                }
+            }
+            catch (Exception)
+            { }
+
+            return result;
+        }
     }
 }
