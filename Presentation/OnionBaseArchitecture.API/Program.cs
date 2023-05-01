@@ -5,7 +5,6 @@ using OnionBaseArchitecture.Application.Common;
 using OnionBaseArchitecture.Caching;
 using OnionBaseArchitecture.Infrastructure;
 using OnionBaseArchitecture.Persistence;
-using static Dapper.SqlMapper;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);

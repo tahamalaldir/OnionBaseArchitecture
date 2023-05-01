@@ -1,6 +1,7 @@
 ﻿using OnionBaseArchitecture.Application.Abstractions.Caching;
 using OnionBaseArchitecture.Application.Abstractions.Repositories.User;
 using OnionBaseArchitecture.Application.Abstractions.Services;
+using OnionBaseArchitecture.Application.Enums;
 using OnionBaseArchitecture.Domain.Entities;
 
 namespace OnionBaseArchitecture.Persistence.Services
@@ -63,7 +64,8 @@ namespace OnionBaseArchitecture.Persistence.Services
                         Surname = Surname,
                         PhoneNumber = PhoneNumber,
                         Password = Password,
-                        PasswordExpireDate = DateTime.UtcNow.AddDays(ExpireDate)
+                        PasswordExpireDate = DateTime.UtcNow.AddDays(ExpireDate),
+                        UserTypeCode = (int)UserType.DefaultUser
                     });
 
                     if (user != null)

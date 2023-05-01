@@ -6,6 +6,8 @@ namespace OnionBaseArchitecture.Domain.Entities
     [TableName("Users")]
     public class User : BaseEntity
     {
+        public int UserTypeCode { get; set; } = 101;
+
         public string Email { get; set; }
 
         public string Username { get; set; }
